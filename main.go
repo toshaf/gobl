@@ -1,12 +1,12 @@
 package main
 
 import (
-	"compress/gzip"
 	"fmt"
+	"github.com/toshaf/gobl/cli"
 	"github.com/toshaf/gobl/cmd/pack"
+	"github.com/toshaf/gobl/log"
+	"github.com/toshaf/gobl/utils"
 	"os"
-	"path"
-	"strings"
 )
 
 func main() {
@@ -23,44 +23,38 @@ func main() {
 		}
 	}()
 
-	prog := os.Args[0]
-
-	if len(os.Args) < 2 {
-		Panic("Usage: %s <cmd> <args>\n", prog)
+	args := cli.Parse()
+	if len(args.Inputs) == 0 {
+		Panic("Usage: %s <cmd> <args>\n", args.Cmd)
 	}
 
-	cmd := os.Args[1]
-	args := os.Args[2:]
-
-	switch cmd {
+	switch args.Cmd {
 	case "pack":
-		if len(args) < 1 {
-			Panic("Usage: %s pack <pkg-path>\n", prog)
+		if len(args.Inputs) < 1 {
+			Panic("Usage: %s pack <pkg-path>\n", args.Cmd)
 		}
 
-		goblpkg := os.ExpandEnv("$GOPATH/gobl-pkg/")
-		err := os.MkdirAll(goblpkg, os.ModeDir|os.ModePerm)
-		if err != nil {
-			panic(err)
-		}
+		pkgname := args.Inputs[0]
+		paths := utils.NewPaths(pkgname)
 
-		basename := args[0]
-
-		outfilename := path.Join(goblpkg, strings.Replace(basename, "/", ".", -1)) + ".gobl"
-
-		outfile, err := os.Create(outfilename)
+		outfile, err := paths.CreateOutputFile()
 		if err != nil {
 			panic(err)
 		}
 		defer outfile.Close()
 
-		zip := gzip.NewWriter(outfile)
-		defer zip.Close()
+		logger := log.NewLoggerFromFlags()
+		logger.Logv("Packing %s", pkgname)
 
-		err = pack.Pack(basename, zip)
+		packer := pack.NewPackCmd(logger, paths, outfile)
+		err = packer.Run()
 		if err != nil {
 			panic(err)
 		}
+
+		logger.Logv("Written %s", paths.GoblFilename)
+	default:
+		panic("Unknown cmd: " + args.Cmd)
 	}
 }
 

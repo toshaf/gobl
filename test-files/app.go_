@@ -1,0 +1,10 @@
+package main
+
+import (
+    "a"
+    "fmt"
+)
+
+func main() {
+    fmt.Printf("From A: %d\n", a.Number())
+}

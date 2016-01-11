@@ -1,0 +1,19 @@
+// Package doc for a
+package a
+
+// This is a's favourite number.
+// It returns and integer.
+func Number() int
+
+// This is a useful struct
+type AStruct struct {
+	Num int
+	// contains filtered or unexported fields
+}
+
+// A very important interface
+type Numberer interface {
+	// The 'main event'
+	Number() int
+}
+
