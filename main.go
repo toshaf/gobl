@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compress/gzip"
 	"fmt"
 	"github.com/toshaf/gobl/cmd/pack"
 	"os"
@@ -53,7 +54,10 @@ func main() {
 		}
 		defer outfile.Close()
 
-		err = pack.Pack(basename, outfile)
+		zip := gzip.NewWriter(outfile)
+		defer zip.Close()
+
+		err = pack.Pack(basename, zip)
 		if err != nil {
 			panic(err)
 		}
