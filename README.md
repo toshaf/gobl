@@ -4,19 +4,22 @@ The aim of GOBL is to provide a means for the distribution of GO packages withou
 ## GOBL package files
 GOBL files are intended to be a flexible for container for binary + partial source or source only distribution of GO code.
 
-GOBL files are simply Gzip compressed tarballs with a .gobl extension and a certain directory structure; as such you can extract the contents of one by issuing
+GOBL files are simply Gzip compressed tarballs with a .gobl extension containing a subset of a GO work area; as such you can extract the contents of one by issuing
 
     $ tar -xzf some.package.gobl
 
-A GOBL file contains any number of the following structures
+An example GOBL file would have the following structure
 
-    package.name/
-        src/
-        pkg/
+    src/
+        github.com/
+            banana/
+                split.go
+    pkg/
+        linux_amd64/
+            banana/
+                split.a
 
-Where package.name is the name of the package that was packed (there could be many in a GOBL file).
-
-The pkg/ dir contains the binary .a files to be linked against, under the relevant `$GOOS` and `$GOARCH` directories.
+The immediate child dirs of pkg/ have the form `$GOOS_$GOARCH`
 
 ## The `gobl` command line tool
 The `gobl` command line tool can be used to pack, publish and consume GOBL packages.
