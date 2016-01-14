@@ -14,6 +14,7 @@ cp app.go_ $SRC_DIR/app/app.go
 
 # build the .a files
 export GOPATH=$TEST_DIR
+export GOBIN=$TEST_DIR/bin
 go install a/...
 
 # pack them up
@@ -31,7 +32,7 @@ rm -rf $SRC_DIR/a
 rm -rf $TEST_DIR/pkg
 
 # unpack the gobl file
-gobl install $TEST_DIR/gobl-pkg/a.gobl
+gobl install -v $TEST_DIR/gobl-pkg/a.gobl
 
 # build the consumer
 go install app
@@ -41,5 +42,7 @@ OUTPUT=`$TEST_DIR/bin/app`
 if [ "$OUTPUT" != "From A: 14902" ]; then
     echo "FAIL: $OUTPUT"
     exit 1
+else
+    echo "SUCCESS: $OUTPUT"
 fi
 
